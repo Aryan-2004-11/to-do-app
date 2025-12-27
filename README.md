@@ -45,6 +45,12 @@ todo_list/
 │           ├── task_detail.html # Task detail page
 │           ├── task_confirm_delete.html
 │           └── error.html       # Error page
+├── tests/                       # Test suite
+│   ├── __init__.py
+│   ├── conftest.py              # Pytest fixtures
+│   ├── test_database.py         # Database operation tests
+│   ├── test_api.py              # API endpoint tests
+│   └── test_views.py            # Template view tests
 │
 ├── docs/                        # Documentation
 │   └── API_DOCUMENTATION.md     # API reference
