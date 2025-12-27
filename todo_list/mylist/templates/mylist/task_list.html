@@ -1,0 +1,148 @@
+{% extends 'mylist/base.html' %}
+
+{% block title %}Tasks - To-Do List{% endblock %}
+
+{% block content %}
+<!-- Success Messages -->
+{% if request.GET.message == 'created' %}
+<div class="alert alert-success">
+    ✓ Task created successfully!
+</div>
+{% endif %}
+
+{% if request.GET.message == 'updated' %}
+<div class="alert alert-success">
+    ✓ Task updated successfully!
+</div>
+{% endif %}
+
+{% if request.GET.message == 'deleted' %}
+<div class="alert alert-success">
+    ✓ Task deleted successfully!
+</div>
+{% endif %}
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="number">{{ stats.total }}</div>
+        <div class="label">Total Tasks</div>
+    </div>
+    <div class="stat-card">
+        <div class="number" style="color: var(--pending-color);">{{ stats.pending }}</div>
+        <div class="label">Pending</div>
+    </div>
+    <div class="stat-card">
+        <div class="number" style="color: var(--in-progress-color);">{{ stats.in_progress }}</div>
+        <div class="label">In Progress</div>
+    </div>
+    <div class="stat-card">
+        <div class="number" style="color: var(--completed-color);">{{ stats.completed }}</div>
+        <div class="label">Completed</div>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<form method="get" class="filter-bar">
+    <div class="form-group">
+        <label>Status</label>
+        <select name="status" class="form-control" onchange="this.form.submit()">
+            <option value="">All Statuses</option>
+            {% for status in status_choices %}
+            <option value="{{ status }}" {% if current_status == status %}selected{% endif %}>
+                {{ status|title }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>Sort By</label>
+        <select name="sort_by" class="form-control" onchange="this.form.submit()">
+            {% for value, label in sort_choices %}
+            <option value="{{ value }}" {% if current_sort == value %}selected{% endif %}>
+                {{ label }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>Order</label>
+        <select name="order" class="form-control" onchange="this.form.submit()">
+            <option value="desc" {% if current_order == 'desc' %}selected{% endif %}>Newest First</option>
+            <option value="asc" {% if current_order == 'asc' %}selected{% endif %}>Oldest First</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <a href="{% url 'task_list' %}" class="btn btn-secondary">Clear Filters</a>
+    </div>
+    
+    <div class="form-group" style="margin-left: auto;">
+        <a href="{% url 'task_create' %}" class="btn btn-primary">+ Add New Task</a>
+    </div>
+</form>
+
+<!-- Tasks Table -->
+<div class="card">
+    {% if tasks %}
+    <table class="task-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>#{{ task.id }}</td>
+                <td>
+                    <a href="{% url 'task_detail' task.id %}" style="color: var(--text-color); text-decoration: none; font-weight: 500;">
+                        {{ task.title }}
+                    </a>
+                    {% if task.description %}
+                    <br><small style="color: var(--text-muted);">{{ task.description|truncatewords:10 }}</small>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="status-badge status-{{ task.status }}">
+                        {{ task.status|title }}
+                    </span>
+                </td>
+                <td>
+                    {% if task.due_date %}
+                    <span class="due-date">{{ task.due_date }}</span>
+                    {% else %}
+                    <span style="color: var(--text-muted);">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <small style="color: var(--text-muted);">{{ task.created_at|slice:":10" }}</small>
+                </td>
+                <td class="actions">
+                    <a href="{% url 'task_detail' task.id %}" class="btn btn-secondary btn-sm">View</a>
+                    <a href="{% url 'task_edit' task.id %}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="{% url 'task_delete' task.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        </svg>
+        <h3>No tasks found</h3>
+        <p>Get started by creating your first task!</p>
+        <a href="{% url 'task_create' %}" class="btn btn-primary" style="margin-top: 16px;">+ Create Task</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

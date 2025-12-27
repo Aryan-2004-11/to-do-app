@@ -1,0 +1,82 @@
+{% extends 'mylist/base.html' %}
+
+{% block title %}{% if form_action == 'edit' %}Edit Task{% else %}Create Task{% endif %} - To-Do List{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2 style="margin-bottom: 24px; font-size: 1.5rem;">
+        {% if form_action == 'edit' %}
+        ✏️ Edit Task #{{ task.id }}
+        {% else %}
+        ➕ Create New Task
+        {% endif %}
+    </h2>
+
+    {% if error %}
+    <div class="alert alert-error">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="title">Title <span style="color: var(--danger-color);">*</span></label>
+            <input 
+                type="text" 
+                id="title" 
+                name="title" 
+                class="form-control" 
+                value="{% if form_data.title %}{{ form_data.title }}{% elif task.title %}{{ task.title }}{% endif %}"
+                placeholder="Enter task title"
+                required
+                autofocus
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea 
+                id="description" 
+                name="description" 
+                class="form-control" 
+                placeholder="Enter task description (optional)"
+            >{% if form_data.description %}{{ form_data.description }}{% elif task.description %}{{ task.description }}{% endif %}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="due_date">Due Date</label>
+            <input 
+                type="date" 
+                id="due_date" 
+                name="due_date" 
+                class="form-control"
+                value="{% if form_data.due_date %}{{ form_data.due_date }}{% elif task.due_date %}{{ task.due_date }}{% endif %}"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status" class="form-control">
+                {% for status in status_choices %}
+                <option value="{{ status }}" 
+                    {% if form_data.status == status %}selected
+                    {% elif task.status == status %}selected
+                    {% elif status == 'pending' and not task %}selected
+                    {% endif %}>
+                    {{ status|title }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 30px;">
+            <button type="submit" class="btn btn-primary">
+                {% if form_action == 'edit' %}Update Task{% else %}Create Task{% endif %}
+            </button>
+            <a href="{% url 'task_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

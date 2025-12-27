@@ -1,0 +1,48 @@
+{% extends 'mylist/base.html' %}
+
+{% block title %}Task #{{ task.id }} - To-Do List{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 700px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+        <h2 style="font-size: 1.5rem; margin: 0;">
+            Task #{{ task.id }}
+        </h2>
+        <span class="status-badge status-{{ task.status }}" style="font-size: 0.9rem;">
+            {{ task.status|title }}
+        </span>
+    </div>
+
+    <div style="margin-bottom: 24px;">
+        <h3 style="font-size: 1.3rem; margin-bottom: 12px;">{{ task.title }}</h3>
+        {% if task.description %}
+        <p style="color: var(--text-muted); line-height: 1.7;">{{ task.description }}</p>
+        {% else %}
+        <p style="color: var(--text-muted); font-style: italic;">No description provided</p>
+        {% endif %}
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 20px; background: var(--bg-color); border-radius: 8px; margin-bottom: 24px;">
+        <div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Due Date</div>
+            <div style="font-weight: 500;">
+                {% if task.due_date %}{{ task.due_date }}{% else %}<span style="color: var(--text-muted);">Not set</span>{% endif %}
+            </div>
+        </div>
+        <div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Created</div>
+            <div style="font-weight: 500;">{{ task.created_at|slice:":19"|default:"-" }}</div>
+        </div>
+        <div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Last Updated</div>
+            <div style="font-weight: 500;">{{ task.updated_at|slice:":19"|default:"-" }}</div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+        <a href="{% url 'task_edit' task.id %}" class="btn btn-primary">Edit Task</a>
+        <a href="{% url 'task_delete' task.id %}" class="btn btn-danger">Delete Task</a>
+        <a href="{% url 'task_list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+{% endblock %}

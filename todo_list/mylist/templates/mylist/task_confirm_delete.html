@@ -1,0 +1,31 @@
+{% extends 'mylist/base.html' %}
+
+{% block title %}Delete Task - To-Do List{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 0 auto; text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: 16px;">⚠️</div>
+    
+    <h2 style="font-size: 1.5rem; margin-bottom: 16px;">Delete Task?</h2>
+    
+    <p style="color: var(--text-muted); margin-bottom: 24px;">
+        Are you sure you want to delete the following task? This action cannot be undone.
+    </p>
+
+    <div style="background: var(--bg-color); padding: 20px; border-radius: 8px; margin-bottom: 24px; text-align: left;">
+        <div style="font-weight: 600; margin-bottom: 8px;">{{ task.title }}</div>
+        {% if task.description %}
+        <div style="color: var(--text-muted); font-size: 0.9rem;">{{ task.description|truncatewords:20 }}</div>
+        {% endif %}
+        <div style="margin-top: 12px;">
+            <span class="status-badge status-{{ task.status }}">{{ task.status|title }}</span>
+        </div>
+    </div>
+
+    <form method="post" style="display: flex; gap: 12px; justify-content: center;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete Task</button>
+        <a href="{% url 'task_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
